@@ -1,1 +1,729 @@
+/* css/estilos.css — Sanación Divina (Novenas) */
 
+:root {
+  --crema: #FAF6F0;
+  --crema-card: #FFFFFF;
+  --vino: #8B1E2F;
+  --vino-oscuro: #6B1422;
+  --vino-claro: #F3E2E5;
+  --dorado: #C9A24B;
+  --dorado-claro: #F6EEDB;
+  --texto: #2A2220;
+  --texto-suave: #6B5F58;
+  --borde: #E8DFD3;
+  --candado: #B4AAA0;
+
+  --font-titulo: 'Cormorant Garamond', Georgia, serif;
+  --font-cuerpo: -apple-system, 'Segoe UI', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--crema);
+  color: var(--texto);
+  font-family: var(--font-cuerpo);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.contenedor {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--crema);
+  position: relative;
+}
+
+/* ---------- Encabezado ---------- */
+.encabezado {
+  padding: 30px 24px 22px;
+  text-align: center;
+  border-bottom: 1px solid var(--borde);
+  background: var(--crema-card);
+}
+
+.encabezado .marca {
+  font-family: var(--font-titulo);
+  font-size: 23px;
+  font-weight: 700;
+  color: var(--vino);
+  letter-spacing: 0.3px;
+}
+
+.encabezado .subtitulo {
+  font-size: 12.5px;
+  color: var(--texto-suave);
+  margin-top: 3px;
+  letter-spacing: 0.2px;
+}
+
+.encabezado .linea-decorativa {
+  width: 36px;
+  height: 2px;
+  background: var(--dorado);
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+/* ---------- Grid de santos ---------- */
+.grid-santos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  padding: 20px;
+}
+
+.tarjeta-santo {
+  background: var(--crema-card);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 20px 14px 16px;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 2px rgba(42, 34, 32, 0.04);
+}
+
+.tarjeta-santo:active {
+  transform: scale(0.97);
+}
+
+.tarjeta-santo.activo {
+  border-color: var(--vino);
+  box-shadow: 0 2px 8px rgba(139, 30, 47, 0.12);
+}
+
+.tarjeta-santo.proximamente {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.tarjeta-santo .icono-santo {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--vino-claro);
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tarjeta-santo .icono-santo svg {
+  width: 26px;
+  height: 26px;
+  color: var(--vino);
+}
+
+.tarjeta-santo.proximamente .icono-santo {
+  background: var(--dorado-claro);
+}
+
+.tarjeta-santo.proximamente .icono-santo svg {
+  color: var(--dorado);
+}
+
+.tarjeta-santo .nombre-santo {
+  font-family: var(--font-titulo);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--texto);
+  line-height: 1.25;
+}
+
+.tarjeta-santo .etiqueta-estado {
+  margin-top: 7px;
+  font-size: 11px;
+  color: var(--texto-suave);
+}
+
+.tarjeta-santo.proximamente .etiqueta-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--dorado-claro);
+  color: #8A6B1F;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-top: 9px;
+}
+
+.tarjeta-santo.proximamente .etiqueta-estado svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* ---------- Navegación inferior ---------- */
+.nav-inferior {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  background: var(--crema-card);
+  border-top: 1px solid var(--borde);
+  padding: 11px 0 calc(11px + env(safe-area-inset-bottom));
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--texto-suave);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-cuerpo);
+}
+
+.nav-item svg {
+  width: 21px;
+  height: 21px;
+}
+
+.nav-item.activo {
+  color: var(--vino);
+}
+
+/* ---------- Calendario de 9 días (rosario visual) ---------- */
+.cabecera-novena {
+  padding: 24px 24px 8px;
+}
+
+.cabecera-novena .titulo-novena {
+  font-family: var(--font-titulo);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--vino);
+}
+
+.cabecera-novena .descripcion-novena {
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin-top: 4px;
+}
+
+.rosario-dias {
+  display: flex;
+  gap: 11px;
+  padding: 18px 20px 26px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.rosario-dias::-webkit-scrollbar {
+  display: none;
+}
+
+.cuenta-dia {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-titulo);
+  font-size: 18px;
+  font-weight: 600;
+  position: relative;
+  border: 2px solid var(--borde);
+  color: var(--candado);
+  background: var(--crema-card);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.cuenta-dia:active {
+  transform: scale(0.92);
+}
+
+.cuenta-dia.completado {
+  background: var(--dorado);
+  border-color: var(--dorado);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(201, 162, 75, 0.35);
+}
+
+.cuenta-dia.completado svg {
+  width: 18px;
+  height: 18px;
+}
+
+.cuenta-dia.disponible {
+  border-color: var(--vino);
+  color: var(--vino);
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(139, 30, 47, 0.15);
+}
+
+.cuenta-dia.bloqueado {
+  color: var(--candado);
+}
+
+.cuenta-dia.bloqueado svg {
+  width: 15px;
+  height: 15px;
+  color: var(--candado);
+}
+
+/* ---------- Tarjeta del día activo ---------- */
+.tarjeta-dia {
+  margin: 0 20px 24px;
+  background: var(--crema-card);
+  border: 1px solid var(--borde);
+  border-radius: 20px;
+  padding: 26px 22px;
+  box-shadow: 0 2px 10px rgba(42, 34, 32, 0.05);
+}
+
+.tarjeta-dia .numero-dia {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--dorado);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.tarjeta-dia .titulo-dia {
+  font-family: var(--font-titulo);
+  font-size: 22px;
+  font-weight: 600;
+  margin: 5px 0 18px;
+  color: var(--texto);
+  line-height: 1.25;
+}
+
+.tarjeta-dia .texto-dia {
+  font-size: 15.5px;
+  color: var(--texto);
+  white-space: pre-wrap;
+  line-height: 1.75;
+}
+
+.tarjeta-dia .texto-dia p {
+  margin-bottom: 15px;
+}
+
+/* ---------- Reproductor de audio ---------- */
+.reproductor {
+  background: linear-gradient(180deg, #ffffff 0%, var(--vino-claro) 100%);
+  border: 1px solid #E8C9CD;
+  border-radius: 18px;
+  padding: 18px 18px 14px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 2px rgba(139, 30, 47, 0.06);
+}
+
+.reproductor.bloqueado {
+  background: linear-gradient(180deg, #ffffff 0%, var(--dorado-claro) 100%);
+  border-color: #EAD9AE;
+}
+
+.fila-reproductor {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.boton-play {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--vino);
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.12s ease, background 0.15s ease;
+  box-shadow: 0 2px 6px rgba(139, 30, 47, 0.28);
+}
+
+.boton-play:active {
+  transform: scale(0.94);
+}
+
+.boton-play svg {
+  width: 18px;
+  height: 18px;
+}
+
+.reproductor.bloqueado .boton-play {
+  background: var(--dorado);
+  box-shadow: 0 2px 6px rgba(201, 162, 75, 0.32);
+}
+
+.info-reproductor {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-reproductor .titulo-audio {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--texto);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-reproductor .titulo-audio svg {
+  width: 13px;
+  height: 13px;
+  color: var(--vino);
+  flex-shrink: 0;
+}
+
+.reproductor.bloqueado .info-reproductor .titulo-audio svg {
+  color: var(--dorado);
+}
+
+.info-reproductor .estado-audio {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin-top: 1px;
+}
+
+.barra-progreso-audio {
+  position: relative;
+  height: 4px;
+  background: rgba(139, 30, 47, 0.12);
+  border-radius: 4px;
+  margin-top: 14px;
+  cursor: pointer;
+}
+
+.reproductor.bloqueado .barra-progreso-audio {
+  background: rgba(201, 162, 75, 0.18);
+}
+
+.barra-progreso-audio .relleno-progreso {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--vino);
+  border-radius: 4px;
+  transition: width 0.1s linear;
+}
+
+.reproductor.bloqueado .relleno-progreso {
+  background: var(--dorado);
+}
+
+.barra-progreso-audio .perilla-progreso {
+  position: absolute;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--vino);
+  transform: translate(-50%, -50%);
+  left: 0%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+
+.reproductor.bloqueado .perilla-progreso {
+  background: var(--dorado);
+}
+
+.fila-tiempos {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+.onda-audio {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 22px;
+  margin-top: 2px;
+}
+
+.onda-audio span {
+  width: 2.5px;
+  background: var(--vino);
+  opacity: 0.35;
+  border-radius: 2px;
+}
+
+.reproductor.bloqueado .onda-audio span {
+  background: var(--dorado);
+}
+
+/* ---------- Fila de acciones (leer / guardar / compartir) ---------- */
+.fila-acciones {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 18px 0 20px;
+}
+
+.boton-accion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--crema);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 12px 8px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--texto-suave);
+  font-weight: 600;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.boton-accion:active {
+  transform: scale(0.95);
+}
+
+.boton-accion svg {
+  width: 19px;
+  height: 19px;
+  color: var(--vino);
+}
+
+.boton-accion.activo {
+  background: var(--vino-claro);
+  border-color: var(--vino);
+  color: var(--vino-oscuro);
+}
+
+/* ---------- Pantalla de lectura limpia ---------- */
+.pantalla-lectura {
+  padding: 8px 24px 40px;
+}
+
+.pantalla-lectura .numero-dia-lectura {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--dorado);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  text-align: center;
+}
+
+.pantalla-lectura .titulo-lectura {
+  font-family: var(--font-titulo);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--vino);
+  text-align: center;
+  margin: 8px 0 30px;
+  line-height: 1.3;
+}
+
+.pantalla-lectura .cuerpo-lectura {
+  font-size: 17px;
+  line-height: 1.95;
+  color: var(--texto);
+}
+
+.pantalla-lectura .cuerpo-lectura p {
+  margin-bottom: 20px;
+}
+.aviso-bloqueo {
+  text-align: center;
+  padding: 28px 16px 8px;
+}
+
+.aviso-bloqueo .icono-candado {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--dorado-claro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.aviso-bloqueo .icono-candado svg {
+  width: 20px;
+  height: 20px;
+  color: var(--dorado);
+}
+
+.aviso-bloqueo .mensaje-bloqueo {
+  font-size: 14.5px;
+  color: var(--texto-suave);
+  margin-bottom: 22px;
+  line-height: 1.6;
+}
+
+.boton-comprar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--vino);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15.5px;
+  padding: 15px 32px;
+  border-radius: 13px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  width: 100%;
+  box-shadow: 0 3px 10px rgba(139, 30, 47, 0.25);
+  transition: transform 0.12s ease;
+}
+
+.boton-comprar:active {
+  background: var(--vino-oscuro);
+  transform: scale(0.98);
+}
+
+.precio-destacado {
+  font-family: var(--font-titulo);
+  font-size: 32px;
+  color: var(--vino);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.nota-garantia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.nota-garantia svg {
+  width: 13px;
+  height: 13px;
+  color: var(--dorado);
+}
+
+/* ---------- Login ---------- */
+.pantalla-login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 32px 28px;
+}
+
+.pantalla-login .marca-login {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.pantalla-login .marca-login .nombre {
+  font-family: var(--font-titulo);
+  font-size: 28px;
+  color: var(--vino);
+  font-weight: 600;
+}
+
+.campo-formulario {
+  margin-bottom: 16px;
+}
+
+.campo-formulario label {
+  display: block;
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin-bottom: 6px;
+}
+
+.campo-formulario input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  font-size: 15px;
+  background: var(--crema-card);
+  color: var(--texto);
+}
+
+.campo-formulario input:focus {
+  outline: none;
+  border-color: var(--vino);
+}
+
+.boton-primario {
+  width: 100%;
+  background: var(--vino);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.mensaje-error {
+  background: #FCEBEB;
+  color: #791F1F;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: none;
+}
+
+.mensaje-error.visible {
+  display: block;
+}
+
+/* ---------- Próximamente (notif) ---------- */
+.modal-proximamente {
+  position: fixed;
+  inset: 0;
+  background: rgba(42, 34, 32, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+
+.modal-proximamente.visible {
+  display: flex;
+}
+
+.modal-proximamente .contenido-modal {
+  background: var(--crema-card);
+  border-radius: 16px;
+  padding: 28px 24px;
+  max-width: 360px;
+  text-align: center;
+}
+
+.modal-proximamente .contenido-modal h3 {
+  font-family: var(--font-titulo);
+  font-size: 19px;
+  color: var(--vino);
+  margin-bottom: 8px;
+}
+
+.modal-proximamente .contenido-modal p {
+  font-size: 14px;
+  color: var(--texto-suave);
+  margin-bottom: 18px;
+}
