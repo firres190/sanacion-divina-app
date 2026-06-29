@@ -825,6 +825,57 @@ body {
   color: var(--texto-suave);
   font-variant-numeric: tabular-nums;
 }
+/* ---------- Ícono y modal de perfil ---------- */
+.boton-perfil {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--vino-claro);
+  color: var(--vino);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.modal-perfil {
+  position: fixed;
+  inset: 0;
+  background: rgba(42, 34, 32, 0.5);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 300;
+}
+
+.modal-perfil.visible {
+  display: flex;
+}
+
+.modal-perfil .hoja-perfil {
+  background: var(--crema-card);
+  border-radius: 20px 20px 0 0;
+  padding: 24px 22px 28px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.modal-perfil .avatar-perfil {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--vino-claro);
+  color: var(--vino);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-titulo);
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 auto 14px;
+}
 /* ---------- Próximamente (notif) ---------- */
 .modal-proximamente {
   position: fixed;
