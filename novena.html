@@ -41,6 +41,7 @@
       <div class="numero-dia-lectura" id="lecturaNumeroDia"></div>
       <div class="titulo-lectura" id="lecturaTitulo"></div>
       <div class="cuerpo-lectura" id="lecturaCuerpo"></div>
+      <button class="boton-primario" style="margin-top:12px;" onclick="cerrarLectura()">Volver al inicio</button>
     </div>
   </div>
 
@@ -128,6 +129,18 @@ const DESCRIPCIONES_DIAS = {
   7: "Hoy oraremos por tu trabajo, tu economía y tu provisión diaria.",
   8: "Hoy pediremos claridad y protección para tus decisiones importantes.",
   9: "Hoy cerramos la novena con gratitud y entrega total."
+};
+
+const INSTRUCCIONES_DIAS = {
+  1: ["Busca un lugar tranquilo donde nadie te interrumpa", "Si tienes una vela, enciéndela como signo de la luz que pides", "Ten cerca una imagen o estampita de San Rafael Arcángel, si la tienes", "Cierra los ojos, junta las manos, y respira profundo tres veces antes de comenzar"],
+  2: ["Busca un lugar tranquilo", "Si lo deseas, ten cerca un vaso de agua, símbolo de la sanación que pides para tu cuerpo", "Coloca tu mano sobre el pecho mientras escuchas, como signo de entrega", "Respira profundo antes de comenzar"],
+  3: ["Busca un lugar tranquilo y silencioso", "Si tienes agua bendita, puedes hacer la señal de la cruz con ella antes de comenzar", "Cierra los ojos y deja que tu mente se aquiete antes de orar"],
+  4: ["Si es posible, reúne contigo una foto de tu familia o piensa en cada uno de sus rostros", "Busca un lugar tranquilo dentro de tu hogar", "Enciende una vela si tienes, como símbolo de unidad en tu casa", "Junta las manos antes de comenzar"],
+  5: ["Busca un lugar tranquilo, lejos de distracciones", "Si lo deseas, ten papel y lápiz cerca para escribir después algo que quieras soltar", "Cierra los ojos y respira profundo, dejando salir el aire despacio"],
+  6: ["Busca un lugar tranquilo donde puedas estar cómodo, incluso sentado o recostado", "Si tienes agua bendita o una estampita de San Rafael, tenla cerca", "Permite que tu cuerpo se relaje antes de comenzar a orar"],
+  7: ["Busca un lugar tranquilo", "Si lo deseas, ten cerca un papel donde anotes lo que pides por tu trabajo o economía", "Junta las manos y respira profundo antes de comenzar"],
+  8: ["Busca un lugar tranquilo donde puedas pensar con calma", "Si tienes una vela, enciéndela como símbolo de claridad", "Antes de comenzar, piensa brevemente en la decisión que hoy traes a la oración"],
+  9: ["Busca un lugar tranquilo, como en cada día de esta novena", "Si tienes una vela o estampita de San Rafael, tenla cerca por última vez en este camino", "Cierra los ojos, junta las manos, y respira profundo antes de comenzar esta oración de cierre"]
 };
 
 let diaSeleccionado = 1;
@@ -280,6 +293,13 @@ function renderizarContenidoDia(dia) {
       </div>
 
       <div class="descripcion-dia">${DESCRIPCIONES_DIAS[dia] || ''}</div>
+
+      <div class="bloque-instrucciones">
+        <div class="titulo-instrucciones">Cómo orar este día</div>
+        <ol class="lista-instrucciones">
+          ${(INSTRUCCIONES_DIAS[dia] || []).map(paso => `<li>${paso}</li>`).join('')}
+        </ol>
+      </div>
 
       <div class="fila-acciones">
         <button class="boton-accion" onclick="abrirLectura(${dia})">
