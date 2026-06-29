@@ -12,7 +12,8 @@
 
 <div class="contenedor">
 
-  <div class="encabezado">
+  <div class="encabezado" style="position:relative;">
+    <div id="contenedorBotonPerfil" style="position:absolute;top:24px;right:20px;"></div>
     <div class="marca" style="font-size:19px;">Silencio</div>
     <div class="subtitulo">Frecuencias de sanación para tu momento de quietud</div>
     <div class="linea-decorativa"></div>
@@ -274,5 +275,10 @@ renderizarReproductor();
 renderizarLista();
 </script>
 
+<script src="js/perfil.js"></script>
+<script>
+document.getElementById('contenedorBotonPerfil').innerHTML = htmlBotonPerfil();
+inyectarPerfilEnPagina();
+</script>
 </body>
 </html>
