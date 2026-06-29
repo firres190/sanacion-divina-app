@@ -2,6 +2,9 @@
 const crypto = require('crypto');
 const { query } = require('./_db');
 
+// Contraseña fija de acceso (igual para todos los compradores).
+// La verificación real de que la persona pagó ocurre por su correo,
+// que debe existir en la tabla de compradores (creada por el webhook de Hotmart).
 const CONTRASENA_ACCESO = process.env.CONTRASENA_ACCESO || 'SANACION2026';
 
 module.exports = async (req, res) => {
@@ -31,6 +34,7 @@ module.exports = async (req, res) => {
 
     const comprador = result.rows[0];
 
+    // Si es su primer login, marcamos el inicio de la novena (Día 1 se desbloquea ya)
     if (!comprador.fecha_inicio_novena) {
       await query(
         'UPDATE compradores SET fecha_inicio_novena = NOW(), dia_actual = 1 WHERE id = $1',
@@ -40,8 +44,10 @@ module.exports = async (req, res) => {
       comprador.dia_actual = 1;
     }
 
+    // Calculamos cuántos días calendario han pasado desde el inicio
     const diaDesbloqueado = calcularDiaDesbloqueado(comprador.fecha_inicio_novena);
 
+    // Token de sesión simple, identificado por el correo (único por persona)
     const sessionToken = crypto
       .createHash('sha256')
       .update(`${comprador.email}-${comprador.id}-${process.env.SESSION_SECRET}`)
@@ -51,6 +57,7 @@ module.exports = async (req, res) => {
       success: true,
       sessionToken,
       email: comprador.email,
+      nombre: comprador.nombre || '',
       santoId: comprador.santo_id,
       diaDesbloqueado,
       diasCompletados: comprador.dias_completados || [],
@@ -61,6 +68,8 @@ module.exports = async (req, res) => {
   }
 };
 
+// Calcula hasta qué día (1-9) está desbloqueado según fecha calendario,
+// no por horas exactas transcurridas.
 function calcularDiaDesbloqueado(fechaInicio) {
   const inicio = new Date(fechaInicio);
   inicio.setHours(0, 0, 0, 0);
@@ -69,6 +78,6 @@ function calcularDiaDesbloqueado(fechaInicio) {
   hoy.setHours(0, 0, 0, 0);
 
   const diffDias = Math.floor((hoy - inicio) / (1000 * 60 * 60 * 24));
-  const diaDesbloqueado = Math.min(diffDias + 1, 9);
-  return Math.max(diaDesbloqueado, 1);
+  const diaDesbloqueado = Math.min(diffDias + 1, 9); // tope en 9
+  return Math.max(diaDesbloqueado, 1); // mínimo día 1
 }
