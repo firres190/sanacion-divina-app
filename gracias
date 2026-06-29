@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡Compra completada! — Sanación Divina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<div class="contenedor">
+  <div class="pantalla-login">
+
+    <div class="marca-login">
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--vino-claro);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--vino)"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <div class="nombre" style="font-size:24px;">Tu compra fue completada</div>
+      <div style="font-size:13.5px;color:var(--texto-suave);margin-top:6px;line-height:1.5;">Dios te bendiga por este paso. Tu novena a San Rafael Arcángel te está esperando.</div>
+    </div>
+
+    <div style="background:var(--vino-claro);border:1px solid #E8C9CD;border-radius:16px;padding:22px 20px;text-align:center;margin-bottom:20px;">
+      <div style="font-size:11.5px;font-weight:700;color:var(--vino-oscuro);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Tu contraseña de acceso</div>
+      <div style="font-family:var(--font-titulo);font-size:26px;font-weight:700;color:var(--vino);letter-spacing:1px;">SANACION2026</div>
+      <div style="font-size:12.5px;color:var(--texto-suave);margin-top:10px;">Guarda esta contraseña, la necesitarás cada vez que entres</div>
+    </div>
+
+    <div style="background:var(--crema-card);border:1px solid var(--borde);border-radius:14px;padding:18px 20px;margin-bottom:22px;">
+      <div style="font-size:11.5px;font-weight:700;color:var(--dorado);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Cómo entrar</div>
+      <div style="font-size:14px;color:var(--texto);line-height:1.7;">
+        1. Toca el botón de abajo<br>
+        2. Escribe el correo con el que compraste<br>
+        3. Ingresa la contraseña: <strong style="color:var(--vino);">SANACION2026</strong><br>
+        4. Comienza tu primer día de novena
+      </div>
+    </div>
+
+    <a href="login.html" class="boton-primario" style="display:block;text-align:center;text-decoration:none;">Entrar a mi novena</a>
+
+    <p style="text-align:center;font-size:12.5px;color:var(--texto-suave);margin-top:22px;">
+      ¿Problemas para acceder?
+      <a href="mailto:soporte@sanaciondivina.app" style="color:var(--texto-suave);text-decoration:underline;">Escríbenos</a>
+    </p>
+
+  </div>
+</div>
+
+</body>
+</html>
