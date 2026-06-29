@@ -143,6 +143,8 @@ const INSTRUCCIONES_DIAS = {
   9: ["Busca un lugar tranquilo, como en cada día de esta novena", "Si tienes una vela o estampita de San Rafael, tenla cerca por última vez en este camino", "Cierra los ojos, junta las manos, y respira profundo antes de comenzar esta oración de cierre"]
 };
 
+const URL_BASE_AUDIO = 'https://pub-17b6dd695eac400e81cbb5a5047191fe.r2.dev';
+
 let diaSeleccionado = 1;
 let audioReproduciendo = false;
 let progresoSimulado = 0;
@@ -399,12 +401,23 @@ function marcarCompletado(dia) {
   }
 }
 
-function parsearDuracion(str) {
-  const [m, s] = str.split(':').map(Number);
-  return m * 60 + s;
+let audioElement = null;
+
+function obtenerAudioElement() {
+  if (!audioElement) {
+    audioElement = new Audio();
+    audioElement.addEventListener('timeupdate', actualizarProgresoReal);
+    audioElement.addEventListener('ended', detenerAudio);
+    audioElement.addEventListener('loadedmetadata', () => {
+      const total = document.getElementById('tiempoTotal');
+      if (total) total.textContent = formatearTiempo(audioElement.duration);
+    });
+  }
+  return audioElement;
 }
 
 function formatearTiempo(seg) {
+  if (!isFinite(seg) || isNaN(seg)) return '0:00';
   const m = Math.floor(seg / 60);
   const s = Math.floor(seg % 60);
   return `${m}:${s.toString().padStart(2, '0')}`;
@@ -420,40 +433,57 @@ function pintarOnda(fraccion) {
   });
 }
 
+function actualizarProgresoReal() {
+  const audio = obtenerAudioElement();
+  if (!audio.duration) return;
+  const fraccion = audio.currentTime / audio.duration;
+  const relleno = document.getElementById('rellenoProgreso');
+  const perilla = document.getElementById('perillaProgreso');
+  const tiempoActual = document.getElementById('tiempoActual');
+  if (relleno) relleno.style.width = (fraccion * 100) + '%';
+  if (perilla) perilla.style.left = (fraccion * 100) + '%';
+  if (tiempoActual) tiempoActual.textContent = formatearTiempo(audio.currentTime);
+  pintarOnda(fraccion);
+}
+
 function alternarAudio(dia) {
+  const audio = obtenerAudioElement();
   const boton = document.getElementById('botonPlay');
+  const estado = document.getElementById('estadoAudio');
+
   if (audioReproduciendo) {
-    detenerAudio();
+    audio.pause();
+    audioReproduciendo = false;
+    boton.innerHTML = ICONO_PLAY;
+    estado.textContent = 'En pausa · ' + (DURACIONES_DIAS[dia] || formatearTiempo(audio.duration || 0));
     return;
   }
-  audioReproduciendo = true;
-  boton.innerHTML = ICONO_PAUSE;
-  document.getElementById('estadoAudio').textContent = 'Reproduciendo';
 
-  const duracionTotal = parsearDuracion(DURACIONES_DIAS[dia] || "3:00");
+  const urlAudio = `${URL_BASE_AUDIO}/dia${dia}.mp3`;
 
-  intervaloAudio = setInterval(() => {
-    progresoSimulado += 0.5;
-    const fraccion = Math.min(progresoSimulado / duracionTotal, 1);
-    document.getElementById('rellenoProgreso').style.width = (fraccion * 100) + '%';
-    document.getElementById('perillaProgreso').style.left = (fraccion * 100) + '%';
-    document.getElementById('tiempoActual').textContent = formatearTiempo(progresoSimulado);
-    pintarOnda(fraccion);
+  if (audio.src !== urlAudio) {
+    audio.src = urlAudio;
+  }
 
-    if (fraccion >= 1) {
-      detenerAudio();
-    }
-  }, 500);
+  audio.play().then(() => {
+    audioReproduciendo = true;
+    boton.innerHTML = ICONO_PAUSE;
+    estado.textContent = 'Reproduciendo';
+  }).catch((error) => {
+    console.error('Error al reproducir audio:', error);
+    estado.textContent = 'No se pudo cargar el audio. Intenta de nuevo.';
+  });
 }
 
 function detenerAudio() {
+  const audio = obtenerAudioElement();
+  audio.pause();
+  audio.currentTime = 0;
   audioReproduciendo = false;
-  progresoSimulado = 0;
-  clearInterval(intervaloAudio);
   const boton = document.getElementById('botonPlay');
   if (boton) boton.innerHTML = ICONO_PLAY;
   const estado = document.getElementById('estadoAudio');
-  if (estado) estado.textContent = 'Toca para escuchar · ' + (DURACIONES_DIAS[diaSeleccionado] || "3:00");
+  if (estado) estado.textContent = 'Toca para escuchar · ' + (DURACIONES_DIAS[diaSeleccionado] || "");
   const relleno = document.getElementById('rellenoProgreso');
   if (relleno) relleno.style.width = '0%';
   const perilla = document.getElementById('perillaProgreso');
@@ -464,15 +494,13 @@ function detenerAudio() {
 }
 
 function buscarEnAudio(evento) {
+  const audio = obtenerAudioElement();
+  if (!audio.duration) return;
   const barra = document.getElementById('barraProgreso');
   const rect = barra.getBoundingClientRect();
   const fraccion = Math.min(Math.max((evento.clientX - rect.left) / rect.width, 0), 1);
-  const duracionTotal = parsearDuracion(DURACIONES_DIAS[diaSeleccionado] || "3:00");
-  progresoSimulado = fraccion * duracionTotal;
-  document.getElementById('rellenoProgreso').style.width = (fraccion * 100) + '%';
-  document.getElementById('perillaProgreso').style.left = (fraccion * 100) + '%';
-  document.getElementById('tiempoActual').textContent = formatearTiempo(progresoSimulado);
-  pintarOnda(fraccion);
+  audio.currentTime = fraccion * audio.duration;
+  actualizarProgresoReal();
 }
 
 const TEXTO_DIA_1_PREVIEW = `<p>Hermanos y hermanas, hoy comenzamos juntos esta novena a San Rafael Arcángel, a quien la tradición de la Iglesia conoce como el Médico de Dios, aquel que devolvió la vista a Tobit y acompañó a su hijo Tobías en un viaje donde nadie más podía protegerlo.</p><p>Antes de comenzar, busca un lugar tranquilo. Cierra los ojos, junta tus manos, y respira profundamente...</p><p style="color:var(--texto-suave);font-style:italic;">— Continúa en la novena completa —</p>`;
