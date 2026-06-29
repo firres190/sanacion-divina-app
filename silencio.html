@@ -18,14 +18,11 @@
     <div class="linea-decorativa"></div>
   </div>
 
-  <div class="tarjeta-dia" style="margin-top:28px;">
-    <div class="aviso-bloqueo" style="padding-top:8px;">
-      <div class="icono-candado">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-      </div>
-      <div style="font-family:var(--font-titulo);font-size:19px;color:var(--vino);font-weight:600;margin-bottom:8px;">Próximamente</div>
-      <div class="mensaje-bloqueo">Estamos preparando frecuencias de sanación para acompañar tus momentos de silencio y oración.</div>
-    </div>
+  <div id="reproductorSilencio"></div>
+
+  <div style="padding:4px 20px 20px;">
+    <div style="font-size:11.5px;font-weight:700;color:var(--dorado);text-transform:uppercase;letter-spacing:1px;margin:8px 0 12px;">Elige una frecuencia</div>
+    <div id="listaFrecuencias"></div>
   </div>
 
   <div class="nav-inferior">
@@ -37,7 +34,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 8h18M12 8v13M7.5 8a2.5 2.5 0 1 1 0-5C9 3 12 5 12 8c0-3 3-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>
       <span>Bono</span>
     </button>
-    <button class="nav-item activo" onclick="window.location.href='silencio.html'">
+    <button class="nav-item activo">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
       <span>Silencio</span>
     </button>
@@ -48,6 +45,234 @@
   </div>
 
 </div>
+
+<script>
+const URL_BASE_FRECUENCIAS = 'https://pub-746efd393d9846fd89bdb01861e05686.r2.dev';
+
+const FRECUENCIAS = [
+  { hz: 174, archivo: '174Hz Removes Pain Track1.mp3', titulo: '174 Hz', descripcion: 'Alivia el dolor' },
+  { hz: 285, archivo: '285hz Heals Energy Field Track2.mp3', titulo: '285 Hz', descripcion: 'Sana el campo energético' },
+  { hz: 396, archivo: '396hz Removes Guilt & Fear Track3.mp3', titulo: '396 Hz', descripcion: 'Libera la culpa y el miedo' },
+  { hz: 417, archivo: '417hz Facilitates Change Track4.mp3', titulo: '417 Hz', descripcion: 'Facilita el cambio' },
+  { hz: 432, archivo: '432hz.mp3', titulo: '432 Hz', descripcion: 'Armonía natural' },
+  { hz: 528, archivo: '528Hz.mp3', titulo: '528 Hz', descripcion: 'Transformación y milagros' },
+  { hz: 639, archivo: '639Hz.mp3', titulo: '639 Hz', descripcion: 'Conexión y relaciones' },
+  { hz: 741, archivo: '741hz Awakens Intuition Track8.mp3', titulo: '741 Hz', descripcion: 'Despierta la intuición' },
+  { hz: 852, archivo: '852hz.mp3', titulo: '852 Hz', descripcion: 'Despertar espiritual' },
+  { hz: 963, archivo: '963hz Connect with Spirit Track10.mp3', titulo: '963 Hz', descripcion: 'Conexión con el Espíritu' }
+];
+
+const ICONO_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+const ICONO_PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+const ICONO_NOTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+const ICONO_RELOJ = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>';
+
+let indiceActual = null;
+let reproduciendo = false;
+let temporizadorId = null;
+let minutosTemporizador = null;
+const audio = new Audio();
+
+function urlFrecuencia(archivo) {
+  return `${URL_BASE_FRECUENCIAS}/${encodeURIComponent(archivo)}`;
+}
+
+function generarOnda() {
+  let barras = '';
+  for (let i = 0; i < 28; i++) {
+    const alto = 6 + Math.round(Math.sin(i * 0.7) * 5 + 6);
+    barras += `<span style="height:${alto}px"></span>`;
+  }
+  return barras;
+}
+
+function formatearTiempo(seg) {
+  if (!isFinite(seg) || isNaN(seg)) return '0:00';
+  const m = Math.floor(seg / 60);
+  const s = Math.floor(seg % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function renderizarReproductor() {
+  const contenedor = document.getElementById('reproductorSilencio');
+
+  if (indiceActual === null) {
+    contenedor.innerHTML = `
+      <div class="tarjeta-dia" style="text-align:center;padding:32px 22px;">
+        <div style="font-size:14.5px;color:var(--texto-suave);">Elige una frecuencia abajo para comenzar.</div>
+      </div>`;
+    return;
+  }
+
+  const frecuencia = FRECUENCIAS[indiceActual];
+
+  contenedor.innerHTML = `
+    <div class="tarjeta-dia">
+      <div class="numero-dia">Frecuencia de sanación</div>
+      <div class="titulo-dia">${frecuencia.titulo} — ${frecuencia.descripcion}</div>
+
+      <div class="reproductor">
+        <div class="fila-reproductor">
+          <button class="boton-play" id="botonPlaySilencio" onclick="alternarReproduccion()">${reproduciendo ? ICONO_PAUSE : ICONO_PLAY}</button>
+          <div class="info-reproductor">
+            <div class="titulo-audio">${ICONO_NOTA} ${frecuencia.titulo}</div>
+            <div class="estado-audio" id="estadoSilencio">${reproduciendo ? 'Reproduciendo' : 'Toca para escuchar'}</div>
+          </div>
+        </div>
+        <div class="onda-audio" id="ondaSilencio">${generarOnda()}</div>
+        <div class="barra-progreso-audio" id="barraSilencio" onclick="buscarEnFrecuencia(event)">
+          <div class="relleno-progreso" id="rellenoSilencio"></div>
+          <div class="perilla-progreso" id="perillaSilencio"></div>
+        </div>
+        <div class="fila-tiempos">
+          <span id="tiempoActualSilencio">0:00</span>
+          <span id="tiempoTotalSilencio">--:--</span>
+        </div>
+      </div>
+
+      <div class="bloque-instrucciones" style="background:var(--crema);">
+        <div class="titulo-instrucciones" style="display:flex;align-items:center;gap:6px;">${ICONO_RELOJ} Temporizador de sueño</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${[15, 30, 60, 120].map(min => `
+            <button class="boton-accion" style="flex:1;min-width:60px;padding:10px 6px;" id="temp-${min}" onclick="activarTemporizador(${min})">
+              <span style="font-weight:600;font-size:13px;">${min} min</span>
+            </button>
+          `).join('')}
+        </div>
+        <div id="estadoTemporizador" style="font-size:12.5px;color:var(--texto-suave);margin-top:10px;text-align:center;display:none;"></div>
+      </div>
+    </div>`;
+
+  pintarOnda(0);
+  marcarTemporizadorActivo();
+}
+
+function renderizarLista() {
+  const contenedor = document.getElementById('listaFrecuencias');
+  contenedor.innerHTML = FRECUENCIAS.map((f, i) => `
+    <div class="boton-accion" style="width:100%;flex-direction:row;justify-content:flex-start;gap:14px;padding:14px 16px;margin-bottom:10px;${indiceActual === i ? 'border-color:var(--vino);background:var(--vino-claro);' : ''}" onclick="seleccionarFrecuencia(${i})">
+      <span style="width:38px;height:38px;border-radius:50%;background:${indiceActual === i ? 'var(--vino)' : 'var(--dorado-claro)'};color:${indiceActual === i ? '#fff' : 'var(--dorado)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        ${indiceActual === i && reproduciendo ? ICONO_PAUSE.replace('viewBox="0 0 24 24"','viewBox="0 0 24 24" style="width:16px;height:16px"') : ICONO_PLAY.replace('viewBox="0 0 24 24"','viewBox="0 0 24 24" style="width:16px;height:16px"')}
+      </span>
+      <span style="text-align:left;">
+        <span style="display:block;font-weight:600;font-size:14.5px;color:var(--texto);">${f.titulo}</span>
+        <span style="display:block;font-size:12.5px;color:var(--texto-suave);margin-top:1px;">${f.descripcion}</span>
+      </span>
+    </div>
+  `).join('');
+}
+
+function seleccionarFrecuencia(indice) {
+  indiceActual = indice;
+  audio.pause();
+  audio.src = urlFrecuencia(FRECUENCIAS[indice].archivo);
+  reproduciendo = false;
+  renderizarReproductor();
+  renderizarLista();
+  alternarReproduccion();
+}
+
+function alternarReproduccion() {
+  if (indiceActual === null) return;
+
+  if (reproduciendo) {
+    audio.pause();
+    reproduciendo = false;
+  } else {
+    audio.play().catch(() => {
+      document.getElementById('estadoSilencio').textContent = 'No se pudo cargar el audio.';
+    });
+    reproduciendo = true;
+  }
+  renderizarReproductor();
+  renderizarLista();
+}
+
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration) return;
+  const fraccion = audio.currentTime / audio.duration;
+  const relleno = document.getElementById('rellenoSilencio');
+  const perilla = document.getElementById('perillaSilencio');
+  const tiempoActual = document.getElementById('tiempoActualSilencio');
+  if (relleno) relleno.style.width = (fraccion * 100) + '%';
+  if (perilla) perilla.style.left = (fraccion * 100) + '%';
+  if (tiempoActual) tiempoActual.textContent = formatearTiempo(audio.currentTime);
+  pintarOnda(fraccion);
+});
+
+audio.addEventListener('loadedmetadata', () => {
+  const total = document.getElementById('tiempoTotalSilencio');
+  if (total) total.textContent = formatearTiempo(audio.duration);
+});
+
+audio.addEventListener('ended', () => {
+  reproduciendo = false;
+  renderizarReproductor();
+  renderizarLista();
+});
+
+function pintarOnda(fraccion) {
+  const onda = document.getElementById('ondaSilencio');
+  if (!onda) return;
+  const barras = onda.querySelectorAll('span');
+  const activas = Math.floor(barras.length * fraccion);
+  barras.forEach((b, i) => {
+    b.style.opacity = i < activas ? '1' : '0.3';
+  });
+}
+
+function buscarEnFrecuencia(evento) {
+  if (!audio.duration) return;
+  const barra = document.getElementById('barraSilencio');
+  const rect = barra.getBoundingClientRect();
+  const fraccion = Math.min(Math.max((evento.clientX - rect.left) / rect.width, 0), 1);
+  audio.currentTime = fraccion * audio.duration;
+}
+
+function activarTemporizador(minutos) {
+  if (temporizadorId) {
+    clearTimeout(temporizadorId);
+  }
+
+  if (minutosTemporizador === minutos) {
+    minutosTemporizador = null;
+    temporizadorId = null;
+  } else {
+    minutosTemporizador = minutos;
+    temporizadorId = setTimeout(() => {
+      audio.pause();
+      reproduciendo = false;
+      minutosTemporizador = null;
+      renderizarReproductor();
+      renderizarLista();
+    }, minutos * 60 * 1000);
+  }
+
+  marcarTemporizadorActivo();
+}
+
+function marcarTemporizadorActivo() {
+  const estado = document.getElementById('estadoTemporizador');
+  if (!estado) return;
+
+  [15, 30, 60, 120].forEach(min => {
+    const boton = document.getElementById(`temp-${min}`);
+    if (boton) {
+      boton.classList.toggle('activo', minutosTemporizador === min);
+    }
+  });
+
+  if (minutosTemporizador) {
+    estado.style.display = 'block';
+    estado.textContent = `El audio se detendrá en ${minutosTemporizador} minutos`;
+  } else {
+    estado.style.display = 'none';
+  }
+}
+
+renderizarReproductor();
+renderizarLista();
+</script>
 
 </body>
 </html>
