@@ -758,6 +758,7 @@ body {
   border-radius: 6px;
   box-shadow: 0 4px 16px rgba(42, 34, 32, 0.18);
   overflow: hidden;
+  background: var(--crema-card);
   backface-visibility: hidden;
   transform-style: preserve-3d;
   transform-origin: left center;
