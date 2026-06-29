@@ -34,6 +34,14 @@
     <div class="pagina-libro detras" id="paginaSiguiente" style="display:none;">
       <img id="imagenSiguiente" src="" alt="Página siguiente">
     </div>
+    <div id="avisoBloqueoLibro" style="display:none;position:absolute;inset:0;z-index:10;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;">
+      <div style="background:rgba(250,246,240,0.94);border-radius:14px;padding:22px 18px;max-width:260px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--dorado);margin-bottom:10px;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <div style="font-family:var(--font-titulo);font-size:17px;font-weight:700;color:var(--vino);margin-bottom:8px;">Continúa leyendo</div>
+        <div style="font-size:13px;color:var(--texto-suave);margin-bottom:16px;line-height:1.5;">Desbloquea el libro completo al comenzar tu novena a San Rafael Arcángel.</div>
+        <button class="boton-comprar" style="font-size:14px;padding:11px 20px;" onclick="window.location.href='novena.html'">Comenzar mi novena</button>
+      </div>
+    </div>
   </div>
 
   <div class="controles-visor" style="max-width:340px;margin:18px auto 0;">
@@ -47,9 +55,9 @@
   </div>
 
   <div style="padding:24px 20px 0;">
-    <a href="https://pub-17b6dd695eac400e81cbb5a5047191fe.r2.dev/guia-conexion-oracion.pdf" target="_blank" class="boton-comprar" style="text-decoration:none;display:flex;width:100%;">
+    <button class="boton-comprar" style="width:100%;" id="botonDescargarPdf" onclick="manejarDescarga()">
       Descargar PDF completo
-    </a>
+    </button>
     <div class="nota-garantia" style="margin-top:14px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--dorado)"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 8h18M12 8v13M7.5 8a2.5 2.5 0 1 1 0-5C9 3 12 5 12 8c0-3 3-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>
       21 páginas · tuyo para siempre
@@ -80,7 +88,12 @@
 <script>
 const URL_BASE_LIBRO = 'https://pub-17b6dd695eac400e81cbb5a5047191fe.r2.dev';
 const TOTAL_PAGINAS = 21;
+const PAGINA_LIMITE_GRATIS = 4;
 const URL_SONIDO_PAGINA = `${URL_BASE_LIBRO}/pagina-sonido.mp3`;
+
+function esComprador() {
+  return !!localStorage.getItem('sd_session');
+}
 
 let paginaActual = 1;
 let animando = false;
@@ -107,6 +120,16 @@ function actualizarControles() {
   document.getElementById('indicadorPagina').textContent = `Página ${paginaActual} de ${TOTAL_PAGINAS}`;
   document.getElementById('botonAnterior').disabled = paginaActual <= 1;
   document.getElementById('botonSiguiente').disabled = paginaActual >= TOTAL_PAGINAS;
+  aplicarBloqueoSiCorresponde();
+}
+
+function aplicarBloqueoSiCorresponde() {
+  const aviso = document.getElementById('avisoBloqueoLibro');
+  const bloqueada = !esComprador() && paginaActual > PAGINA_LIMITE_GRATIS;
+  const imagenActual = document.getElementById('imagenActual');
+
+  imagenActual.style.filter = bloqueada ? 'blur(14px)' : 'none';
+  aviso.style.display = bloqueada ? 'flex' : 'none';
 }
 
 function reproducirSonidoPagina() {
@@ -191,6 +214,14 @@ document.getElementById('visorLibro').addEventListener('touchend', (e) => {
     else paginaAnterior();
   }
 });
+
+function manejarDescarga() {
+  if (esComprador()) {
+    window.open('https://pub-17b6dd695eac400e81cbb5a5047191fe.r2.dev/guia-conexion-oracion.pdf', '_blank');
+  } else {
+    window.location.href = 'novena.html';
+  }
+}
 
 inicializarVisor();
 </script>
