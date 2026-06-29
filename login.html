@@ -18,7 +18,7 @@
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color:var(--vino)"><path d="M16 8.5c2 0 4 1.2 4 3-1.5.5-2.8.3-4-.5M8 8.5C6 8.5 4 9.7 4 11.5c1.5.5 2.8.3 4-.5M12 4c0 5-1 9-5 13M12 4c0 5 1 9 5 13"/></svg>
       </div>
       <div class="nombre">Sanación Divina</div>
-      <div style="font-size:13px;color:var(--texto-suave);margin-top:4px;">Entra con tu correo y la contraseña de acceso</div>
+      <div style="font-size:13px;color:var(--texto-suave);margin-top:4px;">Entra con los datos que recibiste por correo</div>
     </div>
 
     <div class="mensaje-error" id="mensajeError"></div>
@@ -43,7 +43,7 @@
     </p>
 
     <p style="text-align:center;font-size:12.5px;color:var(--texto-suave);margin-top:10px;">
-      ¿Problemas para acceder?
+      ¿No recibiste tu contraseña?
       <a href="mailto:soporte@sanaciondivina.app" style="color:var(--texto-suave);text-decoration:underline;">Escríbenos</a>
     </p>
 
@@ -82,6 +82,7 @@ async function iniciarSesion(evento) {
 
     localStorage.setItem('sd_session', datos.sessionToken);
     localStorage.setItem('sd_email', datos.email);
+    localStorage.setItem('sd_nombre', datos.nombre || '');
     localStorage.setItem('sd_santo', datos.santoId);
     localStorage.setItem('sd_dia_desbloqueado', datos.diaDesbloqueado);
     localStorage.setItem('sd_dias_completados', JSON.stringify(datos.diasCompletados));
