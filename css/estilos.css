@@ -170,25 +170,28 @@ body {
   justify-content: space-around;
   background: var(--crema-card);
   border-top: 1px solid var(--borde);
-  padding: 11px 0 calc(11px + env(safe-area-inset-bottom));
+  padding: 9px 0 calc(9px + env(safe-area-inset-bottom));
 }
 
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-  font-size: 11px;
+  gap: 3px;
+  font-size: 9.5px;
   color: var(--texto-suave);
   background: none;
   border: none;
   cursor: pointer;
   font-family: var(--font-cuerpo);
+  flex: 1;
+  min-width: 0;
+  padding: 0 2px;
 }
 
 .nav-item svg {
-  width: 21px;
-  height: 21px;
+  width: 19px;
+  height: 19px;
 }
 
 .nav-item.activo {
