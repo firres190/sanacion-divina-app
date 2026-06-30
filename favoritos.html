@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Favoritos — Sanación Divina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<div class="contenedor">
+
+  <div class="encabezado" style="position:relative;">
+    <div id="contenedorBotonPerfil" style="position:absolute;top:24px;right:20px;"></div>
+    <div class="marca" style="font-size:19px;">Favoritos</div>
+    <div class="subtitulo">Las oraciones que guardaste para volver a ellas</div>
+    <div class="linea-decorativa"></div>
+  </div>
+
+  <div id="listaFavoritos" style="padding:4px 20px 20px;"></div>
+
+  <div class="nav-inferior">
+    <button class="nav-item" onclick="window.location.href='index.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>
+      <span>Novenas</span>
+    </button>
+    <button class="nav-item" onclick="window.location.href='bono.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 8h18M12 8v13M7.5 8a2.5 2.5 0 1 1 0-5C9 3 12 5 12 8c0-3 3-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>
+      <span>Bono</span>
+    </button>
+    <button class="nav-item" onclick="window.location.href='silencio.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <span>Silencio</span>
+    </button>
+    <button class="nav-item activo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      <span>Favoritos</span>
+    </button>
+    <button class="nav-item" onclick="window.location.href='diario.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>Diario</span>
+    </button>
+  </div>
+
+</div>
+
+<script>
+const TITULOS_DIAS = {
+  1: "Apertura: Confianza en el Médico de Dios",
+  2: "Sanación del cuerpo",
+  3: "Sanación del alma y las heridas del corazón",
+  4: "Sanación de la familia",
+  5: "Liberación de las cargas y el pasado",
+  6: "Fortaleza en momentos de enfermedad o prueba",
+  7: "Sanación de la economía y el trabajo",
+  8: "Protección y guía en las decisiones",
+  9: "Cierre: Gratitud y entrega total"
+};
+
+const ICONO_CORAZON_LLENO = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.35-9.5-9C.5 7.5 3 4 6.5 4 9 4 11 6 12 8c1-2 3-4 5.5-4C21 4 23.5 7.5 21.5 12 19 16.65 12 21 12 21z"/></svg>';
+
+function tieneSesion() {
+  return !!localStorage.getItem('sd_session');
+}
+
+async function cargarFavoritos() {
+  const contenedor = document.getElementById('listaFavoritos');
+
+  if (!tieneSesion()) {
+    contenedor.innerHTML = `
+      <div class="tarjeta-dia" style="text-align:center;padding:36px 22px;">
+        <div style="font-size:14.5px;color:var(--texto-suave);line-height:1.6;margin-bottom:18px;">
+          Inicia sesión en tu novena para ver tus oraciones favoritas.
+        </div>
+        <a href="login.html" class="boton-comprar" style="text-decoration:none;display:inline-flex;">Iniciar sesión</a>
+      </div>`;
+    return;
+  }
+
+  contenedor.innerHTML = `
+    <div class="tarjeta-dia" style="text-align:center;padding:36px 22px;">
+      <div style="font-size:14.5px;color:var(--texto-suave);">Cargando tus favoritos...</div>
+    </div>`;
+
+  const token = localStorage.getItem('sd_session');
+
+  try {
+    const respuesta = await fetch('/api/listar-favoritos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionToken: token })
+    });
+    const datos = await respuesta.json();
+    renderizarFavoritos(datos.favoritos || []);
+  } catch (e) {
+    contenedor.innerHTML = `
+      <div class="tarjeta-dia" style="text-align:center;padding:28px 20px;">
+        <div style="font-size:14px;color:var(--texto-suave);">No pudimos cargar tus favoritos. Intenta de nuevo.</div>
+      </div>`;
+  }
+}
+
+function renderizarFavoritos(favoritos) {
+  const contenedor = document.getElementById('listaFavoritos');
+
+  if (favoritos.length === 0) {
+    contenedor.innerHTML = `
+      <div class="tarjeta-dia" style="text-align:center;padding:32px 20px;">
+        <div style="margin-bottom:12px;color:var(--dorado);display:flex;justify-content:center;">${ICONO_CORAZON_LLENO}</div>
+        <div style="font-size:14.5px;color:var(--texto-suave);line-height:1.6;">
+          Aún no has guardado ninguna oración. Toca "Guardar" en cualquier día de tu novena para encontrarla aquí.
+        </div>
+      </div>`;
+    return;
+  }
+
+  contenedor.innerHTML = favoritos.map(fav => `
+    <a href="novena.html?dia=${fav.dia}" style="text-decoration:none;display:block;">
+      <div class="boton-accion" style="width:100%;flex-direction:row;justify-content:flex-start;gap:14px;padding:16px 18px;margin-bottom:10px;">
+        <span style="width:38px;height:38px;border-radius:50%;background:var(--vino-claro);color:var(--vino);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;font-size:14px;">
+          ${fav.dia}
+        </span>
+        <span style="text-align:left;flex:1;">
+          <span style="display:block;font-size:11px;font-weight:700;color:var(--dorado);text-transform:uppercase;letter-spacing:0.5px;">Día ${fav.dia} de 9</span>
+          <span style="display:block;font-weight:600;font-size:14.5px;color:var(--texto);margin-top:2px;">${TITULOS_DIAS[fav.dia] || ''}</span>
+        </span>
+      </div>
+    </a>
+  `).join('');
+}
+
+cargarFavoritos();
+</script>
+<script src="js/perfil.js"></script>
+<script>
+document.getElementById('contenedorBotonPerfil').innerHTML = htmlBotonPerfil();
+inyectarPerfilEnPagina();
+</script>
+
+</body>
+</html>
